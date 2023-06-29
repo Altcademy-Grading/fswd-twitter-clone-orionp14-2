@@ -1,42 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './home.scss';
+import {
+  createTweetApi,
+  getTweetsApi
+} from './utils/fetchHelper';
 
 const Tweeter = () => {
-  const [tweets, setTweets] = useState([
-    {
-      id: 1,
-      username: 'Maya Summers',
-      screenName: '@AdventureSeeker',
-      content: "Reached the summit of Mount Everest! The view from up here is absolutely breathtaking.⛰️🧗‍♀️",
-    },
-    {
-      id: 2,
-      username: 'Oliver Delgado',
-      screenName: '@FlavorConnoisseur',
-      content: "Just had the most amazing sushi feast! The flavors were out of this world, and the presentation was a work of art. 🍣🔥",
-    },
-    {
-      id: 3,
-      username: 'Ethan Davidson',
-      screenName: '@SportsFanatic24',
-      content: "Witnessed an epic comeback in the championship game! The team's determination and spirit were truly remarkable.🏀🏆",
-    },
-  ]);
-  
+  const [tweets, setTweets] = useState([]);
   const [newTweets, setNewTweets] = useState([]);
-  const [newTweetId, setNewTweetId] = useState(4);
+  const [submitting, setSubmitting] = useState(false);
+  
+  useEffect(() => {
+    getTweetsApi()
+      .then((data) => {
+        setTweets(data.tweets);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [submitting]);
 
   const handleSubmitTweet = (tweetText) => {
-    const newTweet = {
-      id: newTweetId,
-      username: {User}, // Replace with the authenticated username
-      screenName: '@User', // Replace with the authenticated screen name
-      content: tweetText,
-    };
-
-    setNewTweets((prevTweets) => [newTweet, ...prevTweets]);
-    setTweets((prevTweets) => [newTweet, ...prevTweets]);
-    setNewTweetId((prevId) => prevId + 1);
+    setSubmitting(true);
+    createTweetApi(tweetText)
+      .then((data) => {
+        setSubmitting(false);
+      })
   };
 
   const handleDeleteTweet = (tweetId) => {
